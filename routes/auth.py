@@ -18,6 +18,8 @@ def send_reset_email(user):
 If you did not make this request then simply ignore this email and no changes will be made.
 """
     try:
+        import socket
+        socket.setdefaulttimeout(5)
         mail.send(msg)
     except Exception as e:
         print(f'\n--- DEVELOPMENT MODE ---')
@@ -66,6 +68,8 @@ def send_otp_email(user_email, otp_code):
     msg = Message('Verify your account', sender=sender, recipients=[user_email])
     msg.body = f'Your OTP code is {otp_code}. It is valid for 10 minutes.'
     try:
+        import socket
+        socket.setdefaulttimeout(5)
         mail.send(msg)
     except Exception as e:
         print(f'\n--- DEVELOPMENT MODE ---')
