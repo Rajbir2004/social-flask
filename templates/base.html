@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% if title %}{{ title }} - SocialApp{% else %}SocialApp{% endif %}</title>
+    <title>{% if title %}{{ title }} - PostIt{% else %}PostIt{% endif %}</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -11,7 +11,7 @@
 <body>
     <nav class="navbar">
         <div class="nav-container">
-            <a class="nav-logo" href="{{ url_for('post.feed') }}">SocialApp</a>
+            <a class="nav-logo" href="{{ url_for('post.feed') }}">PostIt</a>
             <div class="nav-search">
                 {% if current_user.is_authenticated %}
                 <form action="{{ url_for('user.search') }}" method="GET" class="search-form">
