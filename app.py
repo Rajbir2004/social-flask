@@ -32,8 +32,10 @@ def create_app(config_class=Config):
     if not os.path.exists(app.config['UPLOAD_FOLDER']):
         os.makedirs(app.config['UPLOAD_FOLDER'])
 
+    print("Connecting to database...", flush=True)
     with app.app_context():
         db.create_all()
+    print("Database connected!", flush=True)
 
     return app
 
