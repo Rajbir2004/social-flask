@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="profile-container">
+    <div class="profile-header-box">
+        <div class="profile-pic-container">
+            <img src="{% if user.profile_pic.startswith('http') %}{{ user.profile_pic }}{% else %}{{ url_for('static', filename='uploads/' + user.profile_pic) }}{% endif %}" alt="Profile Picture" class="avatar-large">
+        </div>
+        <div class="profile-info">
+            <h2>{{ user.username }}</h2>
+            <div class="profile-stats">
+                <span><strong>{{ posts|length }}</strong> posts</span>
+                <span><strong>{{ user.followers.count() }}</strong> followers</span>
+                <span><strong>{{ user.followed.count() }}</strong> following</span>
+            </div>
+            <div class="profile-bio">
+                <p>{{ user.bio }}</p>
+            </div>
+            <div class="profile-actions">
+                {% if user == current_user %}
+                    <a href="{{ url_for('user.edit_profile') }}" class="btn btn-outline-primary">Edit Profile</a>
+                {% else %}
+                    {% if current_user.is_following(user) %}
+                        <form action="{{ url_for('user.unfollow', username=user.username) }}" method="POST" class="d-inline like-form">
+                            <button type="submit" class="btn btn-secondary">Unfollow</button>
+                        </form>
+                    {% else %}
+                        <form action="{{ url_for('user.follow', username=user.username) }}" method="POST" class="d-inline like-form">
+                            <button type="submit" class="btn btn-primary">Follow</button>
+                        </form>
+                    {% endif %}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <hr class="divider">
+
+    <div class="profile-posts-grid">
+        {% for post in posts %}
+            <a href="{{ url_for('post.view_post', post_id=post.id) }}" class="grid-item">
+                <img src="{% if post.image_file.startswith('http') %}{{ post.image_file }}{% else %}{{ url_for('static', filename='uploads/' + post.image_file) }}{% endif %}" alt="Post image">
+                <div class="grid-item-overlay">
+                    <span><i class="fas fa-heart"></i> {{ post.likes|length }}</span>
+                    <span><i class="fas fa-comment"></i> {{ post.comments|length }}</span>
+                </div>
+            </a>
+        {% else %}
+            <div class="empty-state w-100 text-center mt-5">
+                <h3>No posts yet</h3>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

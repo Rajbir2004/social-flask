@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="feed-container">
+    {% if posts.items %}
+        {% for post in posts.items %}
+            <div class="post-card">
+                <div class="post-header">
+                    <img src="{% if post.author.profile_pic.startswith('http') %}{{ post.author.profile_pic }}{% else %}{{ url_for('static', filename='uploads/' + post.author.profile_pic) }}{% endif %}" class="avatar-small" alt="avatar">
+                    <a href="{{ url_for('user.profile', username=post.author.username) }}" class="post-author">{{ post.author.username }}</a>
+                    <small class="post-date">{{ post.date_posted.strftime('%Y-%m-%d %H:%M') }}</small>
+                </div>
+                <div class="post-image-container">
+                    <img src="{% if post.image_file.startswith('http') %}{{ post.image_file }}{% else %}{{ url_for('static', filename='uploads/' + post.image_file) }}{% endif %}" class="post-image" alt="Post image">
+                </div>
+                <div class="post-actions">
+                    <form action="{{ url_for('post.like_post', post_id=post.id) }}" method="POST" class="d-inline like-form">
+                        <button type="submit" class="btn-icon {% if current_user.id in post.likes|map(attribute='user_id') %}liked{% endif %}">
+                            <i class="fas fa-heart"></i>
+                        </button>
+                    </form>
+                    <span class="like-count">{{ post.likes|length }} likes</span>
+                    <a href="{{ url_for('post.view_post', post_id=post.id) }}" class="btn-icon"><i class="fas fa-comment"></i></a>
+                    <span class="comment-count">{{ post.comments|length }} comments</span>
+                </div>
+                {% if post.caption %}
+                <div class="post-caption">
+                    <strong>{{ post.author.username }}</strong> {{ post.caption }}
+                </div>
+                {% endif %}
+            </div>
+        {% endfor %}
+        
+        <div class="pagination">
+            {% for page_num in posts.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
+                {% if page_num %}
+                    {% if posts.page == page_num %}
+                        <a class="btn btn-primary mb-4" href="{{ url_for('post.feed', page=page_num) }}">{{ page_num }}</a>
+                    {% else %}
+                        <a class="btn btn-outline-primary mb-4" href="{{ url_for('post.feed', page=page_num) }}">{{ page_num }}</a>
+                    {% endif %}
+                {% else %}
+                    ...
+                {% endif %}
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="empty-state">
+            <h2>No posts yet!</h2>
+            <p>Follow some users or create your first post.</p>
+            <a href="{{ url_for('post.new_post') }}" class="btn btn-primary">Create Post</a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

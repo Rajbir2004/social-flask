@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% if title %}{{ title }} - SocialApp{% else %}SocialApp{% endif %}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a class="nav-logo" href="{{ url_for('post.feed') }}">SocialApp</a>
+            <div class="nav-search">
+                {% if current_user.is_authenticated %}
+                <form action="{{ url_for('user.search') }}" method="GET" class="search-form">
+                    <input type="text" name="q" placeholder="Search users..." class="search-input">
+                    <button type="submit" class="search-btn"><i class="fas fa-search"></i></button>
+                </form>
+                {% endif %}
+            </div>
+            <ul class="nav-links">
+                {% if current_user.is_authenticated %}
+                    <li><a href="{{ url_for('post.feed') }}" class="nav-item">Feed</a></li>
+                    <li><a href="{{ url_for('post.new_post') }}" class="nav-item">New Post</a></li>
+                    <li><a href="{{ url_for('user.profile', username=current_user.username) }}" class="nav-item">Profile</a></li>
+                    <li><a href="{{ url_for('auth.logout') }}" class="nav-item">Logout</a></li>
+                {% else %}
+                    <li><a href="{{ url_for('auth.login') }}" class="nav-item">Login</a></li>
+                    <li><a href="{{ url_for('auth.register') }}" class="nav-item nav-btn">Sign Up</a></li>
+                {% endif %}
+            </ul>
+        </div>
+    </nav>
+
+    <main class="container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flash-messages">
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+        
+        {% block content %}{% endblock %}
+    </main>
+
+    <script>
+        // Auto dismiss flash messages
+        setTimeout(() => {
+            const alerts = document.querySelectorAll('.alert');
+            alerts.forEach(alert => {
+                alert.style.opacity = '0';
+                setTimeout(() => alert.remove(), 300);
+            });
+        }, 5000);
+    </script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const likeForms = document.querySelectorAll('.like-form');
+    likeForms.forEach(form => {
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const url = this.action;
+            const btn = this.querySelector('button');
+            const container = this.closest('.post-actions');
+            const countSpan = container.querySelector('.like-count');
+            
+            fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({})
+            })
+            .then(response => response.json())
+            .then(data => {
+                if(data.liked) {
+                    btn.classList.add('liked');
+                } else {
+                    btn.classList.remove('liked');
+                }
+                countSpan.textContent = data.like_count + ' likes';
+            })
+            .catch(error => console.error('Error:', error));
+        });
+    });
+});
+</script>
+</body>
+
+</html>

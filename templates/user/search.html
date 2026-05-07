@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="search-container">
+    <h2 class="mb-4">Search Results for "{{ query }}"</h2>
+    
+    <div class="users-list">
+        {% for user in users %}
+            <div class="user-list-item">
+                <div class="user-info">
+                    <img src="{% if user.profile_pic.startswith('http') %}{{ user.profile_pic }}{% else %}{{ url_for('static', filename='uploads/' + user.profile_pic) }}{% endif %}" class="avatar-small" alt="avatar">
+                    <a href="{{ url_for('user.profile', username=user.username) }}" class="username-link">{{ user.username }}</a>
+                </div>
+                <div class="user-action">
+                    <a href="{{ url_for('user.profile', username=user.username) }}" class="btn btn-outline-primary btn-sm">View Profile</a>
+                </div>
+            </div>
+        {% else %}
+            <div class="empty-state">
+                <h4>No users found matching "{{ query }}"</h4>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
