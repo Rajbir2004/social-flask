@@ -20,11 +20,11 @@
                     <a href="{{ url_for('user.edit_profile') }}" class="btn btn-outline-primary">Edit Profile</a>
                 {% else %}
                     {% if current_user.is_following(user) %}
-                        <form action="{{ url_for('user.unfollow', username=user.username) }}" method="POST" class="d-inline like-form">
+                        <form action="{{ url_for('user.unfollow', username=user.username) }}" method="POST" class="d-inline">
                             <button type="submit" class="btn btn-secondary">Unfollow</button>
                         </form>
                     {% else %}
-                        <form action="{{ url_for('user.follow', username=user.username) }}" method="POST" class="d-inline like-form">
+                        <form action="{{ url_for('user.follow', username=user.username) }}" method="POST" class="d-inline">
                             <button type="submit" class="btn btn-primary">Follow</button>
                         </form>
                     {% endif %}
