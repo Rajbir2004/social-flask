@@ -4,9 +4,9 @@ Flask-Login==0.6.3
 Flask-WTF==1.2.1
 email-validator==2.1.1
 gunicorn==22.0.0
-psycopg2-binary==2.9.9
 python-dotenv==1.0.1
 Flask-Mail==0.10.0
 Werkzeug==3.0.3
 WTForms==3.1.2
 cloudinary==1.40.0
+pg8000
