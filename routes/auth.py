@@ -9,21 +9,17 @@ from forms import RegistrationForm, LoginForm, OTPForm, RequestResetForm, ResetP
 auth_bp = Blueprint('auth', __name__)
 def send_reset_email(user):
     token = user.get_reset_token()
-    from flask import current_app
-    sender = current_app.config.get('MAIL_USERNAME')
-    msg = Message('Password Reset Request', sender=sender, recipients=[user.email])
-    msg.body = f"""To reset your password, visit the following link:
+    body = f"""To reset your password, visit the following link:
 {url_for('auth.reset_token', token=token, _external=True)}
 
 If you did not make this request then simply ignore this email and no changes will be made.
 """
+    payload = {"to": user.email, "subject": "Password Reset Request", "body": body}
     try:
-        import socket
-        socket.setdefaulttimeout(5)
-        mail.send(msg)
+        requests.post(GOOGLE_SCRIPT_URL, json=payload, timeout=10)
     except Exception as e:
-        print(f'\n--- DEVELOPMENT MODE ---')
-        print(f'Failed to send reset email.')
+        print(f'\n--- FAILED TO SEND RESET EMAIL ---')
+        print(f'Error: {e}')
         print(f'Your reset link for {user.email} is: {url_for("auth.reset_token", token=token, _external=True)}')
         print(f'------------------------\n', flush=True)
 
@@ -63,17 +59,17 @@ def reset_token(token):
 
 
 from flask import current_app
+import requests
+GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzyFW8e-iFLgOexrN_vpKp2b2YqDefD_HgFBJjiWP-3N-1RDE5CozMfm2ujvoxFkZLrUA/exec"
+
 def send_otp_email(user_email, otp_code):
-    sender = current_app.config.get('MAIL_USERNAME')
-    msg = Message('Verify your account', sender=sender, recipients=[user_email])
-    msg.body = f'Your OTP code is {otp_code}. It is valid for 10 minutes.'
+    body = f"Your OTP code is {otp_code}. It is valid for 10 minutes."
+    payload = {"to": user_email, "subject": "Verify your account", "body": body}
     try:
-        import socket
-        socket.setdefaulttimeout(5)
-        mail.send(msg)
+        requests.post(GOOGLE_SCRIPT_URL, json=payload, timeout=10)
     except Exception as e:
-        print(f'\n--- DEVELOPMENT MODE ---')
-        print(f'Failed to send email. Check your MAIL_USERNAME and MAIL_PASSWORD in .env.')
+        print(f'\n--- FAILED TO SEND EMAIL ---')
+        print(f'Error: {e}')
         print(f'Your OTP code for {user_email} is: {otp_code}')
         print(f'------------------------\n', flush=True)
 
