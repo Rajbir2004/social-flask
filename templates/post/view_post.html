@@ -42,9 +42,18 @@
             <h4>Comments</h4>
             {% for comment in post.comments %}
                 <div class="comment">
-                    <strong><a href="{{ url_for('user.profile', username=comment.user.username) }}">{{ comment.user.username }}</a></strong>
-                    <span>{{ comment.content }}</span>
-                    <br><small class="text-muted">{{ comment.date_posted.strftime('%Y-%m-%d %H:%M') }}</small>
+                    <div class="comment-content">
+                        <strong><a href="{{ url_for('user.profile', username=comment.user.username) }}">{{ comment.user.username }}</a></strong>
+                        <span>{{ comment.content }}</span>
+                        <br><small class="text-muted">{{ comment.date_posted.strftime('%Y-%m-%d %H:%M') }}</small>
+                    </div>
+                    {% if comment.user == current_user or post.author == current_user %}
+                    <form action="{{ url_for('post.delete_comment', comment_id=comment.id) }}" method="POST" style="margin: 0;">
+                        <button type="submit" class="btn-icon" style="font-size: 0.9rem; color: var(--danger); padding: 5px;" onclick="return confirm('Delete this comment?');">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </form>
+                    {% endif %}
                 </div>
             {% else %}
                 <p class="text-muted">No comments yet. Be the first!</p>

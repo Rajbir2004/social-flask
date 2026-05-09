@@ -88,3 +88,15 @@ def delete_post(post_id):
     db.session.commit()
     flash('Your post has been deleted!', 'success')
     return redirect(url_for('post.feed'))
+
+@post_bp.route('/comment/<int:comment_id>/delete', methods=['POST'])
+@login_required
+def delete_comment(comment_id):
+    comment = Comment.query.get_or_404(comment_id)
+    post_id = comment.post_id
+    if comment.user != current_user and comment.post.author != current_user:
+        abort(403)
+    db.session.delete(comment)
+    db.session.commit()
+    flash('Comment deleted.', 'info')
+    return redirect(url_for('post.view_post', post_id=post_id))
