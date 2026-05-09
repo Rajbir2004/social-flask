@@ -76,3 +76,15 @@ def like_post(post_id):
     if request.is_json:
         return jsonify({'liked': liked_now, 'like_count': len(post.likes)})
     return redirect(request.referrer or url_for('post.feed'))
+
+from flask import abort
+@post_bp.route('/post/<int:post_id>/delete', methods=['POST'])
+@login_required
+def delete_post(post_id):
+    post = Post.query.get_or_404(post_id)
+    if post.author != current_user:
+        abort(403)
+    db.session.delete(post)
+    db.session.commit()
+    flash('Your post has been deleted!', 'success')
+    return redirect(url_for('post.feed'))

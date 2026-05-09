@@ -94,6 +94,16 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 </script>
+<script>
+document.addEventListener('click', function(e) {
+    if (e.target.closest('.dropdown-toggle')) {
+        const content = e.target.closest('.dropdown').querySelector('.dropdown-content');
+        content.classList.toggle('show');
+    } else {
+        document.querySelectorAll('.dropdown-content.show').forEach(el => el.classList.remove('show'));
+    }
+});
+</script>
 </body>
 
 </html>
