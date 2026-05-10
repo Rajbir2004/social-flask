@@ -9,7 +9,7 @@ MODEL_PATH = os.path.join(os.path.dirname(__file__), 'toxic_model.pkl')
 
 def train_and_save_model():
     # Synthetic small dataset for toxic comment detection
-    data = [
+        data = [
         ('I love this post!', 0),
         ('This is amazing!', 0),
         ('Great job!', 0),
@@ -39,7 +39,7 @@ def train_and_save_model():
         ('Fantastic work', 0),
         ('This is offensive', 1),
         ('Go away', 1),
-        ('Have a nice day', 0,
+        ('Have a nice day', 0),
         ('You are a terrible person', 1),
         ('f**k you', 1),
         ('ugly', 1),
@@ -49,7 +49,7 @@ def train_and_save_model():
         ('moron', 1),
         ('bastard', 1),
         ('hate this', 1),
-        ('you are a failure', 1))
+        ('you are a failure', 1)
     ]
     df = pd.DataFrame(data, columns=['text', 'toxic'])
     
