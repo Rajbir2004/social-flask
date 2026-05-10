@@ -4,7 +4,7 @@ import secrets
 from flask import Blueprint, render_template, redirect, url_for, flash, request, current_app
 from flask_login import current_user, login_required
 from extensions import db
-from models import User
+from models import User, Post, Notification, Report
 from forms import EditProfileForm
 from werkzeug.utils import secure_filename
 

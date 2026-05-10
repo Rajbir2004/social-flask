@@ -1,11 +1,10 @@
 from utils.moderator import is_toxic
-from models import Notification
+from models import Post, Like, Comment, Notification, Report
 import os
 import secrets
 from flask import Blueprint, render_template, redirect, url_for, flash, request, current_app
 from flask_login import current_user, login_required
 from extensions import db
-from models import Post, Like, Comment
 from forms import PostForm, CommentForm
 from werkzeug.utils import secure_filename
 
