@@ -28,7 +28,7 @@ def create_app(config_class=Config):
     app.register_blueprint(auth_bp)
     app.register_blueprint(post_bp)
     app.register_blueprint(user_bp)
-        app.register_blueprint(admin_bp)
+    app.register_blueprint(admin_bp)
 
     # Ensure upload folder exists
     if not os.path.exists(app.config['UPLOAD_FOLDER']):
