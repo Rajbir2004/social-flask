@@ -42,13 +42,13 @@
                             <div class="d-flex gap-2">
                                 {% if not report.resolved %}
                                     <form action="{{ url_for('admin.resolve_report', report_id=report.id) }}" method="POST">
-                                        <button type="submit" class="btn btn-xs btn-success" title="Mark Resolved"><i class="fas fa-check"></i></button>
+                                        <button type="submit" class="btn btn-sm btn-success">Resolve</button>
                                     </form>
                                 {% endif %}
                                 
                                 {% if report.reported_post_id %}
                                     <form action="{{ url_for('admin.delete_post_admin', post_id=report.reported_post_id) }}" method="POST">
-                                        <button type="submit" class="btn btn-xs btn-danger" onclick="return confirm('Delete this post?');" title="Delete Post"><i class="fas fa-trash"></i></button>
+                                        <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Delete this post?');">Delete Post</button>
                                     </form>
                                 {% endif %}
 
@@ -56,11 +56,11 @@
                                 {% if target_user and target_user != current_user %}
                                     {% if target_user.is_banned %}
                                         <form action="{{ url_for('admin.unban_user', user_id=target_user.id) }}" method="POST">
-                                            <button type="submit" class="btn btn-xs btn-warning" title="Unban User"><i class="fas fa-user-check"></i></button>
+                                            <button type="submit" class="btn btn-sm btn-warning">Unban User</button>
                                         </form>
                                     {% else %}
                                         <form action="{{ url_for('admin.ban_user', user_id=target_user.id) }}" method="POST">
-                                            <button type="submit" class="btn btn-xs btn-danger" onclick="return confirm('Ban this user?');" title="Ban User"><i class="fas fa-user-slash"></i></button>
+                                            <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Ban this user?');">Ban User</button>
                                         </form>
                                     {% endif %}
                                 {% endif %}

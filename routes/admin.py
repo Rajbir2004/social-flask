@@ -17,9 +17,18 @@ def dashboard():
     total_users = User.query.count()
     total_posts = Post.query.count()
     
-    # Active users in last 24h
-    one_day_ago = datetime.now(timezone.utc) - timedelta(days=1)
+    now = datetime.now(timezone.utc)
+    one_day_ago = now - timedelta(days=1)
     active_users = User.query.filter(User.last_seen >= one_day_ago).count()
+    
+    chart_labels = []
+    chart_data = []
+    for i in range(6, -1, -1):
+        day = now - timedelta(days=i)
+        day_str = day.strftime('%a')
+        count = User.query.filter(db.func.date(User.created_at) == day.date()).count()
+        chart_labels.append(day_str)
+        chart_data.append(count)
     
     recent_reports = Report.query.filter_by(resolved=False).order_by(Report.timestamp.desc()).limit(5).all()
     
@@ -27,7 +36,9 @@ def dashboard():
                            total_users=total_users, 
                            total_posts=total_posts, 
                            active_users=active_users,
-                           recent_reports=recent_reports)
+                           recent_reports=recent_reports,
+                           chart_labels=chart_labels,
+                           chart_data=chart_data)
 
 @admin_bp.route('/admin/users')
 @login_required

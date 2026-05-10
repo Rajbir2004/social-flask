@@ -39,6 +39,8 @@ def create_app(config_class=Config):
             db.session.execute(db.text("ALTER TABLE users ADD COLUMN IF NOT EXISTS is_banned BOOLEAN DEFAULT FALSE"))
             db.session.execute(db.text("ALTER TABLE users ADD COLUMN IF NOT EXISTS last_seen TIMESTAMP"))
             db.session.commit()
+            db.session.execute(db.text("ALTER TABLE users ADD COLUMN IF NOT EXISTS created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP"))
+            db.session.commit()
         except Exception as e:
             print(f"Migration notice: {e}")
         db.create_all()
@@ -57,8 +59,12 @@ def create_app(config_class=Config):
             if first_user:
                 first_user.is_admin = True
                 db.session.commit()
+            db.session.execute(db.text("ALTER TABLE users ADD COLUMN IF NOT EXISTS created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP"))
+            db.session.commit()
         if current_user.is_authenticated:
             current_user.last_seen = datetime.now(timezone.utc)
+            db.session.commit()
+            db.session.execute(db.text("ALTER TABLE users ADD COLUMN IF NOT EXISTS created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP"))
             db.session.commit()
             if current_user.is_banned:
                 from flask_login import logout_user
