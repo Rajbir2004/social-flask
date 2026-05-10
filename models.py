@@ -79,6 +79,8 @@ class Post(db.Model):
     
     likes = db.relationship('Like', backref='post', lazy=True, cascade='all, delete-orphan')
     comments = db.relationship('Comment', backref='post', lazy=True, cascade='all, delete-orphan')
+    notifications = db.relationship('Notification', backref='post_notif', lazy=True, cascade='all, delete-orphan')
+    reports = db.relationship('Report', backref='post_report', lazy=True, cascade='all, delete-orphan')
 
 class Like(db.Model):
     __tablename__ = 'likes'
@@ -101,7 +103,7 @@ class Notification(db.Model):
     recipient_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     sender_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     notification_type = db.Column(db.String(20), nullable=False) # 'like', 'comment', 'follow'
-    post_id = db.Column(db.Integer, db.ForeignKey('posts.id'), nullable=True)
+    post_id = db.Column(db.Integer, db.ForeignKey('posts.id', ondelete='CASCADE'), nullable=True)
     is_read = db.Column(db.Boolean, default=False)
     timestamp = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
     
@@ -113,14 +115,14 @@ class Report(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     reporter_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     reported_user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
-    reported_post_id = db.Column(db.Integer, db.ForeignKey('posts.id'), nullable=True)
+    reported_post_id = db.Column(db.Integer, db.ForeignKey('posts.id', ondelete='CASCADE'), nullable=True)
     reason = db.Column(db.String(255), nullable=False)
     timestamp = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
     resolved = db.Column(db.Boolean, default=False)
 
     reporter = db.relationship('User', foreign_keys=[reporter_id], backref='reports_made')
     reported_user = db.relationship('User', foreign_keys=[reported_user_id], backref='reports_against')
-    reported_post = db.relationship('Post', foreign_keys=[reported_post_id], backref='reports')
+    reported_post = db.relationship('Post', foreign_keys=[reported_post_id])
 
 class OTP(db.Model):
     __tablename__ = 'otps'

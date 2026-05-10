@@ -41,6 +41,12 @@ def create_app(config_class=Config):
             db.session.commit()
             db.session.execute(db.text("ALTER TABLE users ADD COLUMN IF NOT EXISTS created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP"))
             db.session.commit()
+            # Cascade delete migrations
+            db.session.execute(db.text("ALTER TABLE notifications DROP CONSTRAINT IF EXISTS notifications_post_id_fkey"))
+            db.session.execute(db.text("ALTER TABLE notifications ADD CONSTRAINT notifications_post_id_fkey FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE"))
+            db.session.execute(db.text("ALTER TABLE reports DROP CONSTRAINT IF EXISTS reports_reported_post_id_fkey"))
+            db.session.execute(db.text("ALTER TABLE reports ADD CONSTRAINT reports_reported_post_id_fkey FOREIGN KEY (reported_post_id) REFERENCES posts(id) ON DELETE CASCADE"))
+            db.session.commit()
         except Exception as e:
             print(f"Migration notice: {e}")
         db.create_all()
@@ -61,10 +67,22 @@ def create_app(config_class=Config):
                 db.session.commit()
             db.session.execute(db.text("ALTER TABLE users ADD COLUMN IF NOT EXISTS created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP"))
             db.session.commit()
+            # Cascade delete migrations
+            db.session.execute(db.text("ALTER TABLE notifications DROP CONSTRAINT IF EXISTS notifications_post_id_fkey"))
+            db.session.execute(db.text("ALTER TABLE notifications ADD CONSTRAINT notifications_post_id_fkey FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE"))
+            db.session.execute(db.text("ALTER TABLE reports DROP CONSTRAINT IF EXISTS reports_reported_post_id_fkey"))
+            db.session.execute(db.text("ALTER TABLE reports ADD CONSTRAINT reports_reported_post_id_fkey FOREIGN KEY (reported_post_id) REFERENCES posts(id) ON DELETE CASCADE"))
+            db.session.commit()
         if current_user.is_authenticated:
             current_user.last_seen = datetime.now(timezone.utc)
             db.session.commit()
             db.session.execute(db.text("ALTER TABLE users ADD COLUMN IF NOT EXISTS created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP"))
+            db.session.commit()
+            # Cascade delete migrations
+            db.session.execute(db.text("ALTER TABLE notifications DROP CONSTRAINT IF EXISTS notifications_post_id_fkey"))
+            db.session.execute(db.text("ALTER TABLE notifications ADD CONSTRAINT notifications_post_id_fkey FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE"))
+            db.session.execute(db.text("ALTER TABLE reports DROP CONSTRAINT IF EXISTS reports_reported_post_id_fkey"))
+            db.session.execute(db.text("ALTER TABLE reports ADD CONSTRAINT reports_reported_post_id_fkey FOREIGN KEY (reported_post_id) REFERENCES posts(id) ON DELETE CASCADE"))
             db.session.commit()
             if current_user.is_banned:
                 from flask_login import logout_user
