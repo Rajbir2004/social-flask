@@ -1,4 +1,4 @@
-﻿import os
+import os
 import pickle
 import pandas as pd
 from sklearn.feature_extraction.text import TfidfVectorizer
@@ -9,7 +9,7 @@ MODEL_PATH = os.path.join(os.path.dirname(__file__), 'toxic_model.pkl')
 
 def train_and_save_model():
     # Synthetic small dataset for toxic comment detection
-        data = [
+    data = [
         ('I love this post!', 0),
         ('This is amazing!', 0),
         ('Great job!', 0),
@@ -74,4 +74,4 @@ def is_toxic(text):
     model = get_model()
     # Predict probability
     prob = model.predict_proba([text])[0][1]
-    return prob > 0.65  # Return True if toxicity probability is > 50%
+    return prob > 0.65  # Return True if toxicity probability is > 65%
