@@ -61,7 +61,7 @@ def view_post(post_id):
         db.session.add(comment)
         
         # Create Notification
-        if post.author != current_user:
+        if post.author != current_user and not current_user.is_admin:
             notif = Notification(recipient_id=post.author.id, sender_id=current_user.id, 
                                  notification_type='comment', post_id=post.id)
             db.session.add(notif)
@@ -86,7 +86,7 @@ def like_post(post_id):
         db.session.add(new_like)
         
         # Create Notification
-        if post.author != current_user:
+        if post.author != current_user and not current_user.is_admin:
             notif = Notification(recipient_id=post.author.id, sender_id=current_user.id, 
                                  notification_type='like', post_id=post.id)
             db.session.add(notif)
@@ -102,7 +102,7 @@ from flask import abort
 @login_required
 def delete_post(post_id):
     post = Post.query.get_or_404(post_id)
-    if post.author != current_user:
+    if post.author != current_user and not current_user.is_admin:
         abort(403)
     db.session.delete(post)
     db.session.commit()
