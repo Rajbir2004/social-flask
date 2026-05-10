@@ -145,6 +145,9 @@ def login():
     if form.validate_on_submit():
         user = User.query.filter_by(email=form.email.data).first()
         if user and check_password_hash(user.password, form.password.data):
+            if user.is_banned:
+                flash('Your account has been banned. Please contact support.', 'danger')
+                return redirect(url_for('auth.login'))
             login_user(user, remember=form.remember.data)
             next_page = request.args.get('next')
             flash('Login successful!', 'success')

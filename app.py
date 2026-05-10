@@ -60,11 +60,39 @@ def create_app(config_class=Config):
     @app.before_request
     def before_request():
         from models import User
+        # Run migrations only once or infrequently (for development ease)
+        if not hasattr(app, 'migrated'):
+            try:
+                db.session.execute(db.text("ALTER TABLE users ADD COLUMN IF NOT EXISTS is_admin BOOLEAN DEFAULT FALSE"))
+                db.session.execute(db.text("ALTER TABLE users ADD COLUMN IF NOT EXISTS is_banned BOOLEAN DEFAULT FALSE"))
+                db.session.execute(db.text("ALTER TABLE users ADD COLUMN IF NOT EXISTS last_seen TIMESTAMP"))
+                db.session.execute(db.text("ALTER TABLE users ADD COLUMN IF NOT EXISTS created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP"))
+                db.session.execute(db.text("ALTER TABLE notifications DROP CONSTRAINT IF EXISTS notifications_post_id_fkey"))
+                db.session.execute(db.text("ALTER TABLE notifications ADD CONSTRAINT notifications_post_id_fkey FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE"))
+                db.session.execute(db.text("ALTER TABLE reports DROP CONSTRAINT IF EXISTS reports_reported_post_id_fkey"))
+                db.session.execute(db.text("ALTER TABLE reports ADD CONSTRAINT reports_reported_post_id_fkey FOREIGN KEY (reported_post_id) REFERENCES posts(id) ON DELETE CASCADE"))
+                db.session.commit()
+                app.migrated = True
+            except Exception as e:
+                print(f"Migration error: {e}")
+
+        # Setup first user as admin
         if User.query.filter_by(is_admin=True).first() is None:
             first_user = User.query.first()
             if first_user:
                 first_user.is_admin = True
                 db.session.commit()
+
+        if current_user.is_authenticated:
+            # Check for ban
+            if current_user.is_banned:
+                from flask_login import logout_user
+                logout_user()
+                flash('Your account has been banned. Access denied.', 'danger')
+                return
+                
+            current_user.last_seen = datetime.now(timezone.utc)
+            db.session.commit()
             db.session.execute(db.text("ALTER TABLE users ADD COLUMN IF NOT EXISTS created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP"))
             db.session.commit()
             # Cascade delete migrations
