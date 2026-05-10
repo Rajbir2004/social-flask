@@ -13,16 +13,6 @@ def train_and_save_model():
         ('I love this post!', 0),
         ('This is amazing!', 0),
         ('Great job!', 0),
-        ('this post is best', 0),
-        ('this post is excellent', 0),
-        ('hi', 0),
-        ('hello', 0),
-        ('good morning', 0),
-        ('nice', 0),
-        ('superb', 0),
-        ('wow', 0),
-        ('cool', 0),
-        ('thanks for sharing', 0),
         ('You are stupid', 1),
         ('I hate you', 1),
         ('This is garbage', 1),
@@ -39,17 +29,7 @@ def train_and_save_model():
         ('Fantastic work', 0),
         ('This is offensive', 1),
         ('Go away', 1),
-        ('Have a nice day', 0),
-        ('You are a terrible person', 1),
-        ('f**k you', 1),
-        ('ugly', 1),
-        ('useless', 1),
-        ('brainless', 1),
-        ('get lost', 1),
-        ('moron', 1),
-        ('bastard', 1),
-        ('hate this', 1),
-        ('you are a failure', 1)
+        ('Have a nice day', 0)
     ]
     df = pd.DataFrame(data, columns=['text', 'toxic'])
     
@@ -74,4 +54,4 @@ def is_toxic(text):
     model = get_model()
     # Predict probability
     prob = model.predict_proba([text])[0][1]
-    return prob > 0.65  # Return True if toxicity probability is > 65%
+    return prob > 0.5  # Return True if toxicity probability is > 50%
