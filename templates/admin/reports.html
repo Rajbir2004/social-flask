@@ -9,6 +9,7 @@
                 <thead>
                     <tr>
                         <th>Reporter</th>
+                        <th>Time</th>
                         <th>Reason</th>
                         <th>Target Content</th>
                         <th>Status</th>
@@ -21,6 +22,7 @@
                     {% for report in reports %}
                     <tr class="{% if report.resolved %}opacity-50{% endif %}">
                         <td><span class="text-muted">@</span>{{ report.reporter.username }}</td>
+                        <td><small>{{ report.timestamp | to_ist }}</small></td>
                         <td><span class="badge bg-secondary">{{ report.reason }}</span></td>
                         <td>
                             {% if report.reported_post_id %}

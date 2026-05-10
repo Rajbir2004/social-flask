@@ -32,7 +32,7 @@
                                 <span class="text-success"><i class="fas fa-check-circle"></i> Active</span>
                             {% endif %}
                         </td>
-                        <td>{{ user.id }}</td> {# Placeholder for joined date if added, else ID #}
+                        <td>{{ user.created_at | to_ist }}</td> {# Placeholder for joined date if added, else ID #}
                         <td>
                             {% if user != current_user and not user.is_admin %}
                                 {% if user.is_banned %}

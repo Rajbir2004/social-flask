@@ -16,7 +16,7 @@
                         {% elif notif.notification_type == 'follow' %}
                             started following you
                         {% endif %}
-                        <span class="notif-time text-muted">{{ notif.timestamp.strftime('%H:%M, %d %b') }}</span>
+                        <span class="notif-time text-muted">{{ notif.timestamp | to_ist }}</span>
                     </div>
                 </div>
             {% endfor %}

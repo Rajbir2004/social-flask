@@ -7,7 +7,7 @@
                 <div class="post-header">
                     <img src="{% if post.author.profile_pic.startswith('http') %}{{ post.author.profile_pic }}{% else %}{{ url_for('static', filename='uploads/' + post.author.profile_pic) }}{% endif %}" class="avatar-small" alt="avatar">
                     <a href="{{ url_for('user.profile', username=post.author.username) }}" class="post-author">{{ post.author.username }}</a>
-                    <small class="post-date">{{ post.date_posted.strftime('%Y-%m-%d %H:%M') }}</small>
+                    <small class="post-date">{{ post.date_posted | to_ist }}</small>
                     {% if True %}
                     <div class="dropdown">
                         <button class="btn-icon dropdown-toggle" type="button"><i class="fas fa-ellipsis-v"></i></button>

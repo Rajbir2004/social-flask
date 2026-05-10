@@ -125,6 +125,16 @@ def create_app(config_class=Config):
             notif_count = Notification.query.filter_by(recipient_id=current_user.id, is_read=False).count()
         return dict(unread_notifications=notif_count, datetime=datetime, timezone=timezone)
 
+
+    # IST Timezone conversion filter
+    @app.template_filter('to_ist')
+    def to_ist(utc_dt):
+        if not utc_dt:
+            return ""
+        from datetime import timedelta
+        ist_dt = utc_dt + timedelta(hours=5, minutes=30)
+        return ist_dt.strftime('%d %b %Y, %I:%M %p')
+
     return app
 
 app = create_app()
