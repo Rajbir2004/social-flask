@@ -9,70 +9,80 @@
                 <thead>
                     <tr>
                         <th>Reporter</th>
-                        <th>Target Type</th>
-                        <th>Target Content/User</th>
                         <th>Reason</th>
+                        <th>Target Content</th>
                         <th>Status</th>
-                        <th>Action</th>
+                        <th>Delete Content</th>
+                        <th>Ban Author</th>
+                        <th>Resolution</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for report in reports %}
                     <tr class="{% if report.resolved %}opacity-50{% endif %}">
-                        <td>{{ report.reporter.username }}</td>
-                        <td>{{ 'Post' if report.reported_post_id else 'User' }}</td>
+                        <td><span class="text-muted">@</span>{{ report.reporter.username }}</td>
+                        <td><span class="badge bg-secondary">{{ report.reason }}</span></td>
                         <td>
                             {% if report.reported_post_id %}
-                                <a href="{{ url_for('post.view_post', post_id=report.reported_post_id) }}" class="text-primary">
-                                    View Post #{{ report.reported_post_id }}
+                                <a href="{{ url_for('post.view_post', post_id=report.reported_post_id) }}" class="btn btn-xs btn-outline-primary">
+                                    <i class="fas fa-external-link-alt"></i> View Post #{{ report.reported_post_id }}
                                 </a>
                             {% else %}
-                                {{ report.reported_user.username }}
+                                <span class="text-info">User: {{ report.reported_user.username }}</span>
                             {% endif %}
                         </td>
-                        <td>{{ report.reason }}</td>
                         <td>
                             {% if report.resolved %}
-                                <span class="badge bg-success">Resolved</span>
+                                <span class="text-success"><i class="fas fa-check-circle"></i> Resolved</span>
                             {% else %}
-                                <span class="badge bg-warning">Pending</span>
+                                <span class="text-warning"><i class="fas fa-clock"></i> Pending</span>
                             {% endif %}
                         </td>
                         <td>
-                            <div class="d-flex gap-2">
-                                {% if not report.resolved %}
-                                    <form action="{{ url_for('admin.resolve_report', report_id=report.id) }}" method="POST">
-                                        <button type="submit" class="btn btn-sm btn-success">Resolve</button>
+                            {% if report.reported_post_id %}
+                                <form action="{{ url_for('admin.delete_post_admin', post_id=report.reported_post_id) }}" method="POST">
+                                    <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Delete this post?');">
+                                        <i class="fas fa-trash"></i> Delete
+                                    </button>
+                                </form>
+                            {% else %}
+                                <span class="text-muted">N/A</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% set target_user = report.reported_user if report.reported_user else report.reported_post.author %}
+                            {% if target_user and target_user != current_user %}
+                                {% if target_user.is_banned %}
+                                    <form action="{{ url_for('admin.unban_user', user_id=target_user.id) }}" method="POST">
+                                        <button type="submit" class="btn btn-sm btn-warning">Unban {{ target_user.username }}</button>
+                                    </form>
+                                {% else %}
+                                    <form action="{{ url_for('admin.ban_user', user_id=target_user.id) }}" method="POST">
+                                        <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Ban {{ target_user.username }}?');">
+                                            <i class="fas fa-user-slash"></i> Ban {{ target_user.username }}
+                                        </button>
                                     </form>
                                 {% endif %}
-                                
-                                {% if report.reported_post_id %}
-                                    <form action="{{ url_for('admin.delete_post_admin', post_id=report.reported_post_id) }}" method="POST">
-                                        <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Delete this post?');">Delete Post</button>
-                                    </form>
-                                {% endif %}
-
-                                {% set target_user = report.reported_user if report.reported_user else report.reported_post.author %}
-                                {% if target_user and target_user != current_user %}
-                                    {% if target_user.is_banned %}
-                                        <form action="{{ url_for('admin.unban_user', user_id=target_user.id) }}" method="POST">
-                                            <button type="submit" class="btn btn-sm btn-warning">Unban User</button>
-                                        </form>
-                                    {% else %}
-                                        <form action="{{ url_for('admin.ban_user', user_id=target_user.id) }}" method="POST">
-                                            <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Ban this user?');">Ban User</button>
-                                        </form>
-                                    {% endif %}
-                                {% endif %}
-                            </div>
+                            {% else %}
+                                <span class="text-muted">N/A</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if not report.resolved %}
+                                <form action="{{ url_for('admin.resolve_report', report_id=report.id) }}" method="POST">
+                                    <button type="submit" class="btn btn-sm btn-outline-success">Mark Resolved</button>
+                                </form>
+                            {% else %}
+                                <i class="fas fa-check text-success"></i>
+                            {% endif %}
                         </td>
                     </tr>
-                    {% endfor %}
-                </tbody>
+                    {% endfor %}</tbody>
             </table>
         </div>
     </div>
 </div>
+
 
 <style>
 .bg-warning { background: #f59e0b !important; color: black; }
@@ -80,5 +90,8 @@
 .opacity-50 { opacity: 0.5; }
 .btn-xs { padding: 2px 6px; font-size: 0.75rem; }
 .gap-2 { gap: 8px; }
+.table { font-size: 0.9rem; }
+.btn-sm { white-space: nowrap; }
 </style>
+
 {% endblock %}
