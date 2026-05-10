@@ -66,11 +66,12 @@ def create_app(config_class=Config):
                 flash('Your account has been banned.', 'danger')
 
     @app.context_processor
-    def inject_notifications():
+    def inject_globals():
+        from datetime import datetime, timezone
+        notif_count = 0
         if current_user.is_authenticated:
-            count = Notification.query.filter_by(recipient_id=current_user.id, is_read=False).count()
-            return dict(unread_notifications=count)
-        return dict(unread_notifications=0)
+            notif_count = Notification.query.filter_by(recipient_id=current_user.id, is_read=False).count()
+        return dict(unread_notifications=notif_count, datetime=datetime, timezone=timezone)
 
     return app
 
