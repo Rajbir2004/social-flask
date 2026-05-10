@@ -33,6 +33,14 @@ def create_app(config_class=Config):
 
     print("Connecting to database...", flush=True)
     with app.app_context():
+        # Manual migration for existing database
+        try:
+            db.session.execute(db.text("ALTER TABLE users ADD COLUMN IF NOT EXISTS is_admin BOOLEAN DEFAULT FALSE"))
+            db.session.execute(db.text("ALTER TABLE users ADD COLUMN IF NOT EXISTS is_banned BOOLEAN DEFAULT FALSE"))
+            db.session.execute(db.text("ALTER TABLE users ADD COLUMN IF NOT EXISTS last_seen TIMESTAMP"))
+            db.session.commit()
+        except Exception as e:
+            print(f"Migration notice: {e}")
         db.create_all()
     print("Database connected!", flush=True)
 
