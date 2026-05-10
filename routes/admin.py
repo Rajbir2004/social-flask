@@ -75,3 +75,13 @@ def resolve_report(report_id):
     db.session.commit()
     flash("Report marked as resolved.", "success")
     return redirect(url_for('admin.manage_reports'))
+
+@admin_bp.route('/admin/post/<int:post_id>/delete', methods=['POST'])
+@login_required
+def delete_post_admin(post_id):
+    admin_required()
+    post = Post.query.get_or_404(post_id)
+    db.session.delete(post)
+    db.session.commit()
+    flash("Post has been deleted by admin.", "success")
+    return redirect(url_for('admin.manage_reports'))

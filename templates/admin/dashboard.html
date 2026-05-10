@@ -66,7 +66,43 @@
                 {% endif %}
             </div>
         </div>
+    
+    <div class="analytics-section mt-5 card">
+        <div class="card-header">
+            <h2>Platform Analytics</h2>
+        </div>
+        <div class="card-body">
+            <canvas id="userGrowthChart" height="100"></canvas>
+        </div>
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        const ctx = document.getElementById('userGrowthChart').getContext('2d');
+        const userGrowthChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                datasets: [{
+                    label: 'New Users',
+                    data: [12, 19, 15, 25, 22, 30, 45],
+                    backgroundColor: 'rgba(99, 102, 241, 0.2)',
+                    borderColor: 'rgba(99, 102, 241, 1)',
+                    borderWidth: 2,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.05)' } },
+                    x: { grid: { display: false } }
+                }
+            }
+        });
+    </script>
+
+</div>
 </div>
 
 <style>

@@ -39,11 +39,32 @@
                             {% endif %}
                         </td>
                         <td>
-                            {% if not report.resolved %}
-                                <form action="{{ url_for('admin.resolve_report', report_id=report.id) }}" method="POST">
-                                    <button type="submit" class="btn btn-sm btn-outline-success">Mark Resolved</button>
-                                </form>
-                            {% endif %}
+                            <div class="d-flex gap-2">
+                                {% if not report.resolved %}
+                                    <form action="{{ url_for('admin.resolve_report', report_id=report.id) }}" method="POST">
+                                        <button type="submit" class="btn btn-xs btn-success" title="Mark Resolved"><i class="fas fa-check"></i></button>
+                                    </form>
+                                {% endif %}
+                                
+                                {% if report.reported_post_id %}
+                                    <form action="{{ url_for('admin.delete_post_admin', post_id=report.reported_post_id) }}" method="POST">
+                                        <button type="submit" class="btn btn-xs btn-danger" onclick="return confirm('Delete this post?');" title="Delete Post"><i class="fas fa-trash"></i></button>
+                                    </form>
+                                {% endif %}
+
+                                {% set target_user = report.reported_user if report.reported_user else report.reported_post.author %}
+                                {% if target_user and target_user != current_user %}
+                                    {% if target_user.is_banned %}
+                                        <form action="{{ url_for('admin.unban_user', user_id=target_user.id) }}" method="POST">
+                                            <button type="submit" class="btn btn-xs btn-warning" title="Unban User"><i class="fas fa-user-check"></i></button>
+                                        </form>
+                                    {% else %}
+                                        <form action="{{ url_for('admin.ban_user', user_id=target_user.id) }}" method="POST">
+                                            <button type="submit" class="btn btn-xs btn-danger" onclick="return confirm('Ban this user?');" title="Ban User"><i class="fas fa-user-slash"></i></button>
+                                        </form>
+                                    {% endif %}
+                                {% endif %}
+                            </div>
                         </td>
                     </tr>
                     {% endfor %}
@@ -57,5 +78,7 @@
 .bg-warning { background: #f59e0b !important; color: black; }
 .bg-success { background: var(--success) !important; color: white; }
 .opacity-50 { opacity: 0.5; }
+.btn-xs { padding: 2px 6px; font-size: 0.75rem; }
+.gap-2 { gap: 8px; }
 </style>
 {% endblock %}
