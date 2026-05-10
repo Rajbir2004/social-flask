@@ -13,7 +13,7 @@
                 {% if diff < 120 %}
                     <span class="text-success"><i class="fas fa-circle"></i> Active Now</span>
                 {% else %}
-                    Last seen: {{ user.last_seen.strftime('%H:%M, %d %b') }}
+                    Last seen: {{ user.last_seen | to_ist }}
                 {% endif %}
             {% endif %}
         </div>
