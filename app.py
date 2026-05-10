@@ -1,10 +1,7 @@
 import os
-from flask import Flask
+from flask import Flask, flash
 from config import Config
 from extensions import db, login_manager, mail
-import cloudinary
-import cloudinary.uploader
-import cloudinary.api
 import cloudinary
 import cloudinary.uploader
 import cloudinary.api
