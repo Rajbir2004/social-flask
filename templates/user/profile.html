@@ -9,7 +9,7 @@
             
         <div class="last-seen text-muted mb-2">
             {% if user.last_seen %}
-                {% set diff = (datetime.now(timezone.utc) - user.last_seen).total_seconds() %}
+                {% set diff = (datetime.now(timezone.utc).replace(tzinfo=None) - user.last_seen.replace(tzinfo=None)).total_seconds() %}
                 {% if diff < 300 %}
                     <span class="text-success"><i class="fas fa-circle"></i> Active Now</span>
                 {% else %}
