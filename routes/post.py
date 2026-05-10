@@ -1,3 +1,5 @@
+from utils.moderator import is_toxic
+from models import Notification
 import os
 import secrets
 from flask import Blueprint, render_template, redirect, url_for, flash, request, current_app
@@ -51,8 +53,20 @@ def view_post(post_id):
     post = Post.query.get_or_404(post_id)
     form = CommentForm()
     if form.validate_on_submit():
+        # AI Toxicity Check
+        if is_toxic(form.content.data):
+            flash('Your comment was flagged as inappropriate and blocked by our AI moderator.', 'danger')
+            return redirect(url_for('post.view_post', post_id=post.id))
+
         comment = Comment(content=form.content.data, post_id=post.id, user_id=current_user.id)
         db.session.add(comment)
+        
+        # Create Notification
+        if post.author != current_user:
+            notif = Notification(recipient_id=post.author.id, sender_id=current_user.id, 
+                                 notification_type='comment', post_id=post.id)
+            db.session.add(notif)
+            
         db.session.commit()
         flash('Your comment has been added!', 'success')
         return redirect(url_for('post.view_post', post_id=post.id))
@@ -71,6 +85,13 @@ def like_post(post_id):
     else:
         new_like = Like(user_id=current_user.id, post_id=post.id)
         db.session.add(new_like)
+        
+        # Create Notification
+        if post.author != current_user:
+            notif = Notification(recipient_id=post.author.id, sender_id=current_user.id, 
+                                 notification_type='like', post_id=post.id)
+            db.session.add(notif)
+            
         db.session.commit()
         liked_now = True
     if request.is_json:
@@ -100,3 +121,17 @@ def delete_comment(comment_id):
     db.session.commit()
     flash('Comment deleted.', 'info')
     return redirect(url_for('post.view_post', post_id=post_id))
+
+@post_bp.route('/post/<int:post_id>/report', methods=['POST'])
+@login_required
+def report_post(post_id):
+    post = Post.query.get_or_404(post_id)
+    reason = request.form.get('reason')
+    if not reason:
+        flash('Please provide a reason for reporting.', 'warning')
+        return redirect(url_for('post.view_post', post_id=post.id))
+    report = Report(reporter_id=current_user.id, reported_post_id=post.id, reason=reason)
+    db.session.add(report)
+    db.session.commit()
+    flash('Post has been reported for review.', 'info')
+    return redirect(url_for('post.feed'))

@@ -1,0 +1,61 @@
+﻿{% extends "base.html" %}
+{% block content %}
+<div class="admin-users">
+    <h1 class="mb-4">User Management</h1>
+    
+    <div class="card">
+        <div class="card-body">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Username</th>
+                        <th>Email</th>
+                        <th>Status</th>
+                        <th>Joined</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in users %}
+                    <tr>
+                        <td>
+                            <a href="{{ url_for('user.profile', username=user.username) }}" class="text-white fw-bold">
+                                {{ user.username }}
+                            </a>
+                            {% if user.is_admin %}<span class="badge bg-primary">Admin</span>{% endif %}
+                        </td>
+                        <td>{{ user.email }}</td>
+                        <td>
+                            {% if user.is_banned %}
+                                <span class="text-danger"><i class="fas fa-ban"></i> Banned</span>
+                            {% else %}
+                                <span class="text-success"><i class="fas fa-check-circle"></i> Active</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ user.id }}</td> {# Placeholder for joined date if added, else ID #}
+                        <td>
+                            {% if user != current_user and not user.is_admin %}
+                                {% if user.is_banned %}
+                                    <form action="{{ url_for('admin.unban_user', user_id=user.id) }}" method="POST" class="d-inline">
+                                        <button type="submit" class="btn btn-sm btn-success">Unban</button>
+                                    </form>
+                                {% else %}
+                                    <form action="{{ url_for('admin.ban_user', user_id=user.id) }}" method="POST" class="d-inline">
+                                        <button type="submit" class="btn btn-sm btn-danger">Ban</button>
+                                    </form>
+                                {% endif %}
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<style>
+.badge { padding: 4px 8px; border-radius: 12px; font-size: 0.75rem; margin-left: 8px; }
+.bg-primary { background: var(--primary) !important; color: white; }
+</style>
+{% endblock %}

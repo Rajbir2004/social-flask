@@ -1,3 +1,4 @@
+from datetime import datetime, timezone
 import os
 import secrets
 from flask import Blueprint, render_template, redirect, url_for, flash, request, current_app
@@ -86,3 +87,27 @@ def search():
     if query:
         users = User.query.filter(User.username.ilike(f'%{query}%')).all()
     return render_template('user/search.html', users=users, query=query)
+
+@user_bp.route('/user/<string:username>/report', methods=['POST'])
+@login_required
+def report_user(username):
+    user = User.query.filter_by(username=username).first_or_404()
+    reason = request.form.get('reason')
+    if not reason:
+        flash('Please provide a reason for reporting.', 'warning')
+        return redirect(url_for('user.profile', username=user.username))
+    report = Report(reporter_id=current_user.id, reported_user_id=user.id, reason=reason)
+    db.session.add(report)
+    db.session.commit()
+    flash('User has been reported for review.', 'info')
+    return redirect(url_for('user.profile', username=user.username))
+
+@user_bp.route('/notifications')
+@login_required
+def notifications():
+    notifs = Notification.query.filter_by(recipient_id=current_user.id).order_by(Notification.timestamp.desc()).all()
+    # Mark all as read
+    for n in notifs:
+        n.is_read = True
+    db.session.commit()
+    return render_template('user/notifications.html', notifications=notifs)

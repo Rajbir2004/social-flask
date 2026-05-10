@@ -1,0 +1,61 @@
+﻿{% extends "base.html" %}
+{% block content %}
+<div class="admin-reports">
+    <h1 class="mb-4">Content Reports</h1>
+    
+    <div class="card">
+        <div class="card-body">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Reporter</th>
+                        <th>Target Type</th>
+                        <th>Target Content/User</th>
+                        <th>Reason</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for report in reports %}
+                    <tr class="{% if report.resolved %}opacity-50{% endif %}">
+                        <td>{{ report.reporter.username }}</td>
+                        <td>{{ 'Post' if report.reported_post_id else 'User' }}</td>
+                        <td>
+                            {% if report.reported_post_id %}
+                                <a href="{{ url_for('post.view_post', post_id=report.reported_post_id) }}" class="text-primary">
+                                    View Post #{{ report.reported_post_id }}
+                                </a>
+                            {% else %}
+                                {{ report.reported_user.username }}
+                            {% endif %}
+                        </td>
+                        <td>{{ report.reason }}</td>
+                        <td>
+                            {% if report.resolved %}
+                                <span class="badge bg-success">Resolved</span>
+                            {% else %}
+                                <span class="badge bg-warning">Pending</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if not report.resolved %}
+                                <form action="{{ url_for('admin.resolve_report', report_id=report.id) }}" method="POST">
+                                    <button type="submit" class="btn btn-sm btn-outline-success">Mark Resolved</button>
+                                </form>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<style>
+.bg-warning { background: #f59e0b !important; color: black; }
+.bg-success { background: var(--success) !important; color: white; }
+.opacity-50 { opacity: 0.5; }
+</style>
+{% endblock %}

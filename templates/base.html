@@ -7,6 +7,20 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<style>
+.notif-badge {
+    position: absolute;
+    top: -5px;
+    right: -10px;
+    background: var(--danger);
+    color: white;
+    border-radius: 50%;
+    padding: 2px 6px;
+    font-size: 0.7rem;
+    font-weight: bold;
+}
+.position-relative { position: relative; }
+</style>
 </head>
 <body>
     <nav class="navbar">
@@ -24,7 +38,16 @@
                 {% if current_user.is_authenticated %}
                     <li><a href="{{ url_for('post.feed') }}" class="nav-item">Feed</a></li>
                     <li><a href="{{ url_for('post.new_post') }}" class="nav-item">New Post</a></li>
+                    <li><a href="{{ url_for('user.notifications') }}" class="nav-item position-relative">
+                        <i class="fas fa-bell"></i>
+                        {% if unread_notifications > 0 %}
+                            <span class="notif-badge">{{ unread_notifications }}</span>
+                        {% endif %}
+                    </a></li>
                     <li><a href="{{ url_for('user.profile', username=current_user.username) }}" class="nav-item">Profile</a></li>
+                    {% if current_user.is_admin %}
+                        <li><a href="{{ url_for('admin.dashboard') }}" class="nav-item text-primary"><i class="fas fa-user-shield"></i> Admin</a></li>
+                    {% endif %}
                     <li><a href="{{ url_for('auth.logout') }}" class="nav-item">Logout</a></li>
                 {% else %}
                     <li><a href="{{ url_for('auth.login') }}" class="nav-item">Login</a></li>

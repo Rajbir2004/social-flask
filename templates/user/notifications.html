@@ -1,0 +1,43 @@
+﻿{% extends "base.html" %}
+{% block content %}
+<div class="notifications-container">
+    <h1 class="mb-4">Notifications</h1>
+    
+    {% if notifications %}
+        <div class="notifications-list">
+            {% for notif in notifications %}
+                <div class="notification-item {% if not notif.is_read %}unread{% endif %}">
+                    <div class="notif-content">
+                        <strong>{{ notif.sender.username }}</strong>
+                        {% if notif.notification_type == 'like' %}
+                            liked your <a href="{{ url_for('post.view_post', post_id=notif.post_id) }}">post</a>
+                        {% elif notif.notification_type == 'comment' %}
+                            commented on your <a href="{{ url_for('post.view_post', post_id=notif.post_id) }}">post</a>
+                        {% elif notif.notification_type == 'follow' %}
+                            started following you
+                        {% endif %}
+                        <span class="notif-time text-muted">{{ notif.timestamp.strftime('%H:%M, %d %b') }}</span>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="empty-state">
+            <p class="text-muted">No notifications yet.</p>
+        </div>
+    {% endif %}
+</div>
+
+<style>
+.notifications-list { display: flex; flex-direction: column; gap: 10px; }
+.notification-item {
+    background: var(--card-bg);
+    padding: 15px 20px;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    transition: var(--transition);
+}
+.notification-item.unread { border-left: 4px solid var(--primary); background: rgba(99, 102, 241, 0.05); }
+.notif-time { font-size: 0.8rem; margin-left: 10px; }
+</style>
+{% endblock %}

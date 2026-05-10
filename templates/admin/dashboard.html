@@ -1,0 +1,110 @@
+﻿{% extends "base.html" %}
+{% block content %}
+<div class="admin-dashboard">
+    <h1 class="mb-4">Admin Dashboard</h1>
+    
+    <div class="stats-grid">
+        <div class="stats-card">
+            <div class="stats-icon"><i class="fas fa-users"></i></div>
+            <div class="stats-info">
+                <h3>Total Users</h3>
+                <p class="stats-number">{{ total_users }}</p>
+            </div>
+        </div>
+        <div class="stats-card">
+            <div class="stats-icon"><i class="fas fa-file-alt"></i></div>
+            <div class="stats-info">
+                <h3>Total Posts</h3>
+                <p class="stats-number">{{ total_posts }}</p>
+            </div>
+        </div>
+        <div class="stats-card">
+            <div class="stats-icon"><i class="fas fa-user-check"></i></div>
+            <div class="stats-info">
+                <h3>Active Today</h3>
+                <p class="stats-number">{{ active_users }}</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="dashboard-sections mt-5">
+        <div class="recent-reports-section card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h2>Recent Reports</h2>
+                <a href="{{ url_for('admin.manage_reports') }}" class="btn btn-outline-primary btn-sm">View All</a>
+            </div>
+            <div class="card-body">
+                {% if recent_reports %}
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Reporter</th>
+                                <th>Target</th>
+                                <th>Reason</th>
+                                <th>Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for report in recent_reports %}
+                            <tr>
+                                <td>{{ report.reporter.username }}</td>
+                                <td>
+                                    {% if report.reported_post_id %}
+                                        Post #{{ report.reported_post_id }}
+                                    {% else %}
+                                        User: {{ report.reported_user.username }}
+                                    {% endif %}
+                                </td>
+                                <td>{{ report.reason }}</td>
+                                <td>{{ report.timestamp.strftime('%Y-%m-%d') }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% else %}
+                    <p class="text-muted">No pending reports.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+}
+.stats-card {
+    background: var(--card-bg);
+    padding: 24px;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    transition: var(--transition);
+}
+.stats-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-lg); }
+.stats-icon {
+    font-size: 2.5rem;
+    color: var(--primary);
+    background: rgba(99, 102, 241, 0.1);
+    width: 70px;
+    height: 70px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 15px;
+}
+.stats-number { font-size: 2rem; font-weight: 700; color: var(--text-main); margin: 0; }
+.stats-info h3 { font-size: 1rem; color: var(--text-muted); margin-bottom: 5px; }
+
+.card { background: var(--card-bg); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+.card-header { padding: 15px 20px; border-bottom: 1px solid var(--border); background: rgba(255,255,255,0.02); }
+.card-body { padding: 20px; }
+.table { width: 100%; color: var(--text-main); border-collapse: collapse; }
+.table th, .table td { padding: 12px; text-align: left; border-bottom: 1px solid var(--border); }
+.table th { color: var(--text-muted); font-weight: 500; font-size: 0.9rem; }
+</style>
+{% endblock %}

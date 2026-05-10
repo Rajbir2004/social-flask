@@ -22,6 +22,9 @@ class User(db.Model, UserMixin):
     password = db.Column(db.String(255), nullable=False)
     bio = db.Column(db.String(255), default='')
     profile_pic = db.Column(db.String(255), nullable=False, default='default.jpg')
+    is_admin = db.Column(db.Boolean, default=False)
+    is_banned = db.Column(db.Boolean, default=False)
+    last_seen = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
     
 
     def get_reset_token(self):
@@ -89,6 +92,34 @@ class Comment(db.Model):
     date_posted = db.Column(db.DateTime, nullable=False, default=lambda: datetime.now(timezone.utc))
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     post_id = db.Column(db.Integer, db.ForeignKey('posts.id'), nullable=False)
+
+
+class Notification(db.Model):
+    __tablename__ = 'notifications'
+    id = db.Column(db.Integer, primary_key=True)
+    recipient_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    sender_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    notification_type = db.Column(db.String(20), nullable=False) # 'like', 'comment', 'follow'
+    post_id = db.Column(db.Integer, db.ForeignKey('posts.id'), nullable=True)
+    is_read = db.Column(db.Boolean, default=False)
+    timestamp = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
+    
+    recipient = db.relationship('User', foreign_keys=[recipient_id], backref='notifications_received')
+    sender = db.relationship('User', foreign_keys=[sender_id], backref='notifications_sent')
+
+class Report(db.Model):
+    __tablename__ = 'reports'
+    id = db.Column(db.Integer, primary_key=True)
+    reporter_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    reported_user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
+    reported_post_id = db.Column(db.Integer, db.ForeignKey('posts.id'), nullable=True)
+    reason = db.Column(db.String(255), nullable=False)
+    timestamp = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
+    resolved = db.Column(db.Boolean, default=False)
+
+    reporter = db.relationship('User', foreign_keys=[reporter_id], backref='reports_made')
+    reported_user = db.relationship('User', foreign_keys=[reported_user_id], backref='reports_against')
+    reported_post = db.relationship('Post', foreign_keys=[reported_post_id], backref='reports')
 
 class OTP(db.Model):
     __tablename__ = 'otps'
